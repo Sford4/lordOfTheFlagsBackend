@@ -1,6 +1,5 @@
-const Category = require('../models/category');
-const User = require('../models/user');
 const Game = require('../models/game');
+const CardSet = require('../models/cardSet');
 const shortid = require('shortid');
 
 let checkIfAddCodeUnique = async addCode => {
@@ -18,7 +17,6 @@ let checkIfAddCodeUnique = async addCode => {
 module.exports = {
 	index: async (req, res, next) => {
 		const games = await Game.find({});
-
 		res.status(200).json(games);
 	},
 
@@ -28,16 +26,16 @@ module.exports = {
 	},
 
 	newGame: async (req, res, next) => {
-		let categoriesArr = [];
-		let cards = [];
-		for (let i = 0; i < req.value.body.categories.length; i++) {
-			let categoryCards = await Category.findById(req.value.body.categories[i]);
-			Array.prototype.push.apply(cards, categoryCards.cards);
-			categoriesArr.push(categoryCards.title);
+		let cardsArr = [];
+		for (let i = 0; i < req.value.body.editions.length; i++) {
+			console.log('edition desired', req.value.body.editions[i].editionNum);
+			let edition = await CardSet.find({ edition: req.value.body.editions[i].editionNum });
+			// console.log('edition found', edition[0]);
+			Array.prototype.push.apply(cardsArr, edition[0].cards);
 		}
+		console.log('cards array', cardsArr);
 		const newGame = req.value.body;
-		delete newGame.cards;
-		newGame.cards = cards;
+		newGame.cards = cardsArr;
 		let addCode = shortid.generate();
 		while (!checkIfAddCodeUnique(addCode.substring(0, addCode.length - 4))) {
 			// console.log('addcode not unique, making a new one');
@@ -46,14 +44,7 @@ module.exports = {
 		newGame.addCode = addCode.substring(0, addCode.length - 4);
 		const game = new Game(newGame);
 		await game.save();
-		res.status(200).json({
-			gameType: game.gameType,
-			addCode: game.addCode,
-			_id: game._id,
-			players: game.players,
-			organizer: game.organizer,
-			categories: categoriesArr
-		});
+		res.status(200).json({ game });
 	},
 
 	getGame: async (req, res, next) => {

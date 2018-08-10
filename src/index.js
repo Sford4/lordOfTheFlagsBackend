@@ -18,9 +18,10 @@ mongoose.connect('mongodb://localhost:27017/lordOfFlagsApi', () => {
 });
 
 const games = require('./routes/games');
+const cardSets = require('./routes/cardSet');
 
 try {
-	const port = process.env.PORT || 8000;
+	const port = process.env.PORT || 9000;
 	server.listen(port);
 	console.log(`Listening on port: ${port}`);
 } catch (err) {
@@ -33,6 +34,7 @@ app.use(bodyParser.json());
 
 // Routes
 app.use('/games', games);
+app.use('/cardSets', cardSets);
 
 // Catch 404 Errors and forward them to error handler
 app.use((req, res, next) => {

@@ -33,24 +33,38 @@ module.exports = {
 	},
 
 	schemas: {
-
 		gameSchema: Joi.object().keys({
-			categories: Joi.array().items(Joi.string().regex(/^[0-9a-fA-F]{24}$/)).required(),
-			players: Joi.array()
+			// cards: Joi.array()
+			// 	.items(
+			// 		Joi.object().keys({
+			// 			image: Joi.string(),
+			// 			cardType: Joi.string(),
+			// 			title: Joi.string(),
+			// 			description: Joi.string()
+			// 		})
+			// 	)
+			// 	.required(),
+			editions: Joi.array().items(
+				Joi.object().keys({
+					title: Joi.string(),
+					editionNum: Joi.number()
+				})
+			),
+			organizer: Joi.string().required()
+		}),
+
+		cardSetSchema: Joi.object().keys({
+			edition: Joi.number(),
+			cards: Joi.array()
 				.items(
 					Joi.object().keys({
-						avatar: Joi.string().required(),
-						username: Joi.string().required(),
-						cardsWon: Joi.array().required(),
-						cardsInPlay: Joi.array().required()
+						image: Joi.string().required(),
+						cardType: Joi.string().required(),
+						title: Joi.string().required(),
+						description: Joi.string().required()
 					})
 				)
-				.required(),
-			gameType: Joi.object().keys({
-				title: Joi.string().required(),
-				limit: Joi.string().required()
-			}),
-			organizer: Joi.string().required()
+				.required()
 		}),
 
 		idSchema: Joi.object().keys({
